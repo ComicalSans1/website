@@ -1,68 +1,97 @@
 ---
+layout: ../../layouts/MDPostLayout.astro
 title: 'maths n shit'
 pubDate: 2022-07-01
 description: 'im so fucking smart'
-author: 'Astro Learner'
+author: 'hi'
 image:
     url: 'https://docs.astro.build/assets/rose.webp'
     alt: 'The Astro logo on a dark background with a pink glow.'
-tags: ["astro", "blogging", "learning in public"]
+tags: ["RL", "David Silver UCL", "MDP"]
 ---
 
-***f*** - The fixed but unknown function that connects the input variable to the output variable. It is the job of the model to estimate this function as accurately as possible.
+**State Transition Probability:** For a Markov state $s$ and successor state $s'$, the state transition probability is defined by
+#### $\mathcal{P}_{ss'} = \mathbb{P} \left[ S_{t+1} = s' \mid S_t = s \right]$
 
- ## ***Y = f(X) + $\epsilon$***
+**State Transition Matrix:** defines the STPs from all states $s$ to all successor states $s'$.
+![[Pasted image 20250601133824.png]]
+where each *row* of the matrix sums to 1.
+**Note**: STM is the mathematical representation of a Markov process/Markov chain
 
-There are two main reasons that we may wish to estimate *f* - **prediction** and **inference**.
-#### Prediction:
+##### **Markov Process:** 
+Memoryless random process, i.e. a sequence of random states $S_1, S_2, \dots$ with the Markov property.
+In the form of a tuple $(S, \mathcal{P})$,
+- $S$ is the set of states
+- $\mathcal{P}$ is the STP.
 
-In many situations, a set of inputs X are readily available, but the output Y cannot be easily obtained. In this setting, since the error term averages to zero, we can predict Y using 
-###### $\hat{Y}$ = $\hat{f}$(X),
+##### **Markov Reward Process:**
+Markov chain with rewards included
+In the form of a tuple $(S, \mathcal{P}, \mathcal{R}, \gamma)$ 
+- $S$ is the set of states
+- $\mathcal{P}$ is the STP.
+- $\mathcal{R}$ is a reward function, $\mathcal{R}_s = \mathbb{E}[R_t+1 | S_t = s]$ 
+- $\gamma$ is a discount factor, $\gamma \in [0, 1]$
 
-where $\hat{f}$ represents our estimate for *f*, and $\hat{Y}$ represents the resulting prediction for *Y*.
+**Return:** The total discounted reward from a time step t.
+##### $G_t = R_{t+1} + \gamma R_{t+2} + \ldots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$ 
 
-In this setting, **$\hat{f}$ is often treated as a black box, in the sense that one is not typically concerned with the exact form of $\hat{f}$, provided that it yields accurate predictions for Y .**
+**Value Function:** The expected return starting from a state s
+##### $v(s) = \mathbb{E}[G_t | S_t = s]$ 
 
-The accuracy of $\hat{Y}$ as a prediction of Y depends on 2 quantities: the *reducible* error and the *irreducible* error.
-- Reducible errors occur from $\hat{f}$ not being a perfect estimate of f, and can be rectified by using the most appropriate statistical learning technique to estimate f.
-- However, even if it were possible to form a perfect estimate for f, so that the estimated response took the form $\hat{f}$ = f(X), the prediction would still have some error in it, as Y is also a function of $\epsilon$, which by definition cannot be predicted using X.\
-- $\epsilon$ can be larger than 0 either due to it being affected by other unmeasured variables, or due to there being some inherent randomness present in the data.
+**Note:** Each node in the graph is defined manually at the start, and then iteratively updated with values as the states progress, (similar to how you initialize model weights in deep learning).
 
-Assuming both $\hat{f}$ and X are fixed, 
-![[Pasted image 20240913131711.png]]
-where E(Y - $\hat{Y}$)$^{2}$ represents the average, or expected value, of the squared expected value difference between the predicted and actual value of Y, and Var($\epsilon$) represents the variance associated with the error term $\epsilon$.
-#### Inference:
+**Bellman Equation for MRPs**:
+The value function can be decomposed into the immediate reward $R_t+1$ and the discounted value function of the successor $\gamma v(S_t+1)$.
+This is done 
+- for user clarity? you know how much of the reward is inherent and how much is due to the model's predictions.
+- it's just more convenient in a lot of places to separate these 2 quantities. don't read into it too much
 
-When we want to understand the association between the output and input variables,
-$\hat{f}$ cannot be treated as a black box, as we need to know its exact form. In this case, we may be interested in answering the following questions:
+#### Markov Decision Process:
+Is a Markov Reward Process with decisions.
 
-- Which predictors affect the response?
-- What is the relationship between the response and each predictor?
-- Can the relationship between Y and each predictor be adequately summarized using a linear equation, or is the relationship more complicated?
+Represented in the form of a tuple $(S, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$  
+- $S$ is the set of states
+- $\mathcal{A}$ is the set of actions
+- $\mathcal{P}$ is the STP, $\mathcal{P}^a_{ss'} = \mathbb{P} \left[ S_{t+1} = s' \mid S_t = s, A_t = a\right ]$  
+- $\mathcal{R}$ is a reward function, $\mathcal{R}^a_s = \mathbb{E}[R_t+1 | S_t = s, A_t = a]$  
+- $\gamma$ is a discount factor, $\gamma \in [0, 1]$
 
-### **Estimating *f***
-#### Parametric Methods:
+**Policy:** 
+A policy is a mapping from state to action, which dictates the behaviour of the agent.
+- in simpler networks this can be represented as a matrix of n(states) * n(actions)
+- in more complicated networks, you can integrate a neural network that takes in the state as input and outputs a distribution across actions. -> Deep RL
+#### $\pi(a \mid s) = \mathbb{P}[A_t = a \mid S_t = s]$ 
 
-We make an assumption that *f* is linear i.e:
+**State Value Function:** 
+Same deal, is the expected return starting from state s and following policy $\pi$
+#### $v_\pi(s) = \mathbb{E}_\pi[G_t \mid S_t = s]$ 
 
-*f(X)* = $\beta_0$ + $\beta_1X_1$ + $\beta_2X_2$ + ... + $\beta_pX_p$  
+**Action Value Function:**
+is the expected return starting from state s, taking action a, and then following policy $\pi$
+- Calculated for each action that can be taken 
+- Action with the highest AVF is taken
+#### $q_\pi(s, a) = \mathbb{E}_\pi[G_t \mid S_t = s, A_t = a]$ 
 
-Now instead of having to estimate an entirely arbitrary p-dimensional function f(X), one only needs to estimate the p + 1 coefficients.
+**Bellman Expectation Equations:**
+#### $v_\pi(s) = \mathbb{E}_\pi[R_{t+1} + \gamma v_\pi(S_t+1) \mid S_t = s]$
 
-After a model has been selected, we need a procedure that uses the training data to ft or train the model. In the case of the above function, we need to find the value of the parameters such that *Y* $\approx$  $\beta_0$ + $\beta_1X_1$ + $\beta_2X_2$ + ... + $\beta_pX_p$.
+#### $q_\pi(s) = \mathbb{E}_\pi[R_{t+1} + \gamma v_\pi(S_{t+1}, A_{t+1}) \mid S_t = s, A_t = a]$  
 
-The most common method to do so is referred to as (ordinary) least squares.
+can also be expressed in the form of a matrix
+#### $v_\pi = \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_\pi$ 
+#### $v_\pi = (I - \gamma \mathcal{p}^\pi)^{-1} \mathcal{R}^\pi$    
+##### **Optimal Value Functions:**
+**Optimal SVF:** Maximum state value function over all policies
+#### $v_*(s) = \max_\pi v_\pi(s)$
 
-Assuming a parametric form simplifies the problem of estimating *f* down to estimating a set of parameters, thus greatly simplifying the whole process.
+**Optimal AVF:** Maximum state value function over all policies
+#### $q_*(s, a) = \max_\pi q_\pi(s, a)$
 
-The biggest disadvantage of the parametric approach is naturally, decreased accuracy.
-We can try to address this problem by choosing flexible models that can ft many different possible functional forms flexible for f. But in general, fitting a more flexible model requires estimating a greater number of parameters.
-This can lead to a phenomenon known as overfitting the data, which essentially means they follow the errors, or noise, too closely.
+##### **Optimal Policy:**
+##### $\pi \geq \pi' \ \text{if} \ v_{\pi}(\mathbf{s}) \geq v_{\pi'}(\mathbf{s}),\ \forall \mathbf{s}$
 
-#### Non-Parametric Methods:
+For any MDP,
+- There exists an optimal policy $\pi_*$ that is better than or equal to all other policies
+- All optimal policies achieve the optimal SVF $v_{\pi_*} (s) = v_* (s)$ 
+- All optimal policies achieve the optimal AVF $q_{\pi_*} (s, a) = q_* (s, a)$ 
 
-Non-parametric methods do not make explicit assumptions about the functional form of f. Instead they seek an estimate of f that gets as close to the data points as possible without being too rough or wiggly.
-
-By not making any assumptions about the functional form of *f*, the model can fit a wider range of possible shapes for *f*.
-
-The big drawback of non-parametric approaches is the increased complexity, needing a very large number of observations to obtain an accurate estimate for *f*.
