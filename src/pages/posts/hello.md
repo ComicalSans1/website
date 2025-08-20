@@ -4,9 +4,6 @@ title: 'maths n shit'
 pubDate: 2022-07-01
 description: 'im so fucking smart'
 author: 'hi'
-image:
-    url: 'https://docs.astro.build/assets/rose.webp'
-    alt: 'The Astro logo on a dark background with a pink glow.'
 tags: ["RL", "David Silver UCL", "MDP"]
 ---
 
@@ -14,7 +11,11 @@ tags: ["RL", "David Silver UCL", "MDP"]
 #### $\mathcal{P}_{ss'} = \mathbb{P} \left[ S_{t+1} = s' \mid S_t = s \right]$
 
 **State Transition Matrix:** defines the STPs from all states $s$ to all successor states $s'$.
-![[Pasted image 20250601133824.png]]
+
+To include an image in basic markdown, use the following syntax:
+
+![State transition matrix diagram](../../assets/STM.png)
+
 where each *row* of the matrix sums to 1.
 **Note**: STM is the mathematical representation of a Markov process/Markov chain
 
