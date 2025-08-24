@@ -1,5 +1,5 @@
 ---
-layout: ../../layouts/MDPostLayout.astro
+layout: ../../../layouts/MDPostLayout.astro
 title: 'fuck you'
 pubDate: 2022-07-01
 description: 'hah'
