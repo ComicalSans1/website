@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+const pathname = Astro.url.pathname;
+const pathParts = pathname.split('/').filter(part => part);
+const folderName = pathParts[pathParts.length - 1];
+const pageTitle = folderName.charAt(0).toUpperCase() + folderName.slice(1);
+
+const posts = Object.values(import.meta.glob('./*.md', { eager: true }));
+---
+<BaseLayout pageTitle="CS">
+  <p>For now just notes probably</p>
+  
+  <ul>
+    {posts.map((post: any) => (
+      <li><a href={post.url}>{post.frontmatter.title}</a></li>
+    ))}
+  </ul>
+</BaseLayout>
